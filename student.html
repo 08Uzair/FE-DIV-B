@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--=============== BOXICONS ===============-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+
+    <!--=============== CSS ===============-->
+    <link rel="stylesheet" href="assets/css/styles.css">
+
+    <title>Responsive bottom navigation</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<style>
+    /*=============== GOOGLE FONTS ===============*/
+    @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap");
+
+    /*=============== VARIABLES CSS ===============*/
+    :root {
+        --header-height: 3rem;
+
+        /*========== Colors ==========*/
+        --hue: 174;
+        --sat: 63%;
+        --first-color: hsl(var(--hue), var(--sat), 40%);
+        --first-color-alt: hsl(var(--hue), var(--sat), 36%);
+        --title-color: hsl(var(--hue), 12%, 15%);
+        --text-color: hsl(var(--hue), 8%, 35%);
+        --body-color: radial-gradient(circle at 30% -100%, #042c54 25%, #042c54 85%, #1b78de 100%);
+        --container-color: #FFF;
+
+        /*========== Font and typography ==========*/
+        --body-font: 'Open Sans', sans-serif;
+        --h1-font-size: 1.5rem;
+        --normal-font-size: .938rem;
+        --tiny-font-size: .625rem;
+
+        /*========== z index ==========*/
+        --z-tooltip: 10;
+        --z-fixed: 100;
+    }
+
+    @media screen and (min-width: 968px) {
+        :root {
+            --h1-font-size: 2.25rem;
+            --normal-font-size: 1rem;
+        }
+    }
+
+    /*=============== BASE ===============*/
+    * {
+        box-sizing: border-box;
+        padding: 0;
+        margin: 0;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        margin: var(--header-height) 0 0 0;
+        font-family: var(--body-font);
+        font-size: var(--normal-font-size);
+        background-color: #f2f0f0;
+        color: var(--text-color);
+    }
+
+    ul {
+        list-style: none;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /*=============== REUSABLE CSS CLASSES ===============*/
+    .section {
+        padding: 4.5rem 0 2rem;
+    }
+
+    .section__title {
+        font-size: var(--h1-font-size);
+        color: var(--title-color);
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .section__height {
+        height: 100vh;
+    }
+
+    /*=============== LAYOUT ===============*/
+    .container {
+        max-width: 100%;
+
+    }
+
+    /*=============== HEADER ===============*/
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: var(--container-color);
+        z-index: var(--z-fixed);
+        transition: .4s;
+    }
+
+    /*=============== NAV ===============*/
+    .nav {
+        height: var(--header-height);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .nav__img {
+        width: 32px;
+        border-radius: 50%;
+    }
+
+    .nav__logo {
+        color: var(--title-color);
+        font-weight: 600;
+        margin-left: 47%;
+    }
+
+    @media screen and (max-width: 767px) {
+        .nav__menu {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            background-color: var(--container-color);
+            box-shadow: 0 -1px 12px hsla(var(--hue), var(--sat), 15%, 0.15);
+            width: 100%;
+            height: 4rem;
+            padding: 0 1rem;
+            display: grid;
+            align-content: center;
+            border-radius: 1.25rem 1.25rem 0 0;
+            transition: .4s;
+        }
+    }
+
+    .nav__list,
+    .nav__link {
+        display: flex;
+    }
+
+    .nav__link {
+        flex-direction: column;
+        align-items: center;
+        row-gap: 4px;
+        color: var(--title-color);
+        font-weight: 600;
+    }
+
+    .nav__list {
+        justify-content: space-around;
+    }
+
+    .nav__name {
+        font-size: var(--tiny-font-size);
+        /* display: none;*/
+        /* Minimalist design, hidden labels */
+    }
+
+    .nav__icon {
+        font-size: 1.5rem;
+    }
+
+    /*Active link*/
+    .active-link {
+        position: relative;
+        color: var(--first-color);
+        transition: .3s;
+    }
+
+    /* Minimalist design, active link */
+    /* .active-link::before{
+      content: '';
+      position: absolute;
+      bottom: -.5rem;
+      width: 4px;
+      height: 4px;
+      background-color: var(--first-color);
+      border-radius: 50%;
+    } */
+
+    /* Change background header */
+    .scroll-header {
+        box-shadow: 0 1px 12px hsla(var(--hue), var(--sat), 15%, 0.15);
+    }
+
+    /*=============== MEDIA QUERIES ===============*/
+    /* For small devices */
+    /* Remove if you choose, the minimalist design */
+    @media screen and (max-width: 320px) {
+        .nav__name {
+            display: none;
+        }
+    }
+
+    /* For medium devices */
+    @media screen and (min-width: 576px) {
+        .nav__list {
+            justify-content: center;
+            column-gap: 3rem;
+        }
+    }
+
+    @media screen and (min-width: 767px) {
+        body {
+            margin: 0;
+        }
+
+        .section {
+            padding: 7rem 0 2rem;
+        }
+
+        .nav {
+            height: calc(var(--header-height) + 1.5rem);
+            /* 4.5rem */
+        }
+
+        .nav__img {
+            display: none;
+        }
+
+        .nav__icon {
+            display: none;
+        }
+
+        .nav__name {
+            font-size: var(--normal-font-size);
+            /* display: block; */
+            /* Minimalist design, visible labels */
+        }
+
+        .nav__link:hover {
+            color: var(--first-color);
+        }
+
+        /* First design, remove if you choose the minimalist design */
+        .active-link::before {
+            content: '';
+            position: absolute;
+            bottom: -.75rem;
+            width: 4px;
+            height: 4px;
+            background-color: var(--first-color);
+            border-radius: 50%;
+        }
+
+        /* Minimalist design */
+        /* .active-link::before{
+          bottom: -.75rem;
+      } */
+    }
+
+    /* For large devices */
+    @media screen and (min-width: 1024px) {
+        .container {
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+</style>
+
+<body>
+    <!-- Loader -->
+    
+    <!--=============== HEADER ===============-->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <a href="index.html" class="nav__logo">SAOE DIV : B</a>
+
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list navt">
+                    <li class="nav__item">
+                        <a href="index.html" class="nav__link active-link">
+                            <i class='bx bx-home-alt nav__icon'></i>
+                            <span class="nav__name" id="sao"></span>
+                        </a>
+                    </li>
+
+
+                </ul>
+            </div>
+
+            <img src="assets/img/perfil.png" alt="" class="nav__img">
+        </nav>
+    </header>
+
+    <main>
+        <!--=============== SKILLS ===============-->
+        <section class="container section " id="skills">
+            <div class="uzer_content1">
+                <div class="uzer_head">
+                    <h1>STUDENTS</h1>
+                </div>
+                <div class="uzer_contentcards" id="cards">
+
+
+                </div>
+
+        </section>
+
+    </main>
+    <!-- Footer Section -->
+    <footer class="footer_section_avez">
+        <div class="avez_movie_footer_container">
+            <div class="avez_movie_footer_logo">
+                <h2>Sinhgad Academy of Engineering, </h2>
+                <h6>Sinhgad Institutes, SAE</h6>
+            </div>
+            <div class="avez_movie_footer_desc">
+                <ul>
+
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">Our Head's</a></li>
+                    <li><a href="#skills">Our TG's</a></li>
+                    <li><a href="">Our Students</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="branding_avez_dev">
+            &copy; 2023 Mohammad Uzer Nizamoddin Qureshi
+        </div>
+        <div style="background-color: #FFF;" class="branding_avez_dev none">
+            &copy; 2023 Mohammad Uzer Nizamoddin Qureshi
+        </div>
+    </footer>
+
+
+    <!--=============== MAIN JS ===============-->
+    <script>
+        var students =
+            [
+                {
+                    "id": 1,
+                    "name": "Dev : Uzer Qureshi",
+                    "image": "Students/Uzer.jpg",
+                    "roll": "FB049"
+                },
+                {
+                    "id": 2,
+                    "name": "CR  : Tejas Malode ",
+                    "image": "Students/FB044.jpg",
+                    "roll": "FB044"
+                },
+                {
+                    "id": 3,
+                    "name": "LR : Fazin Kazi ",
+                    "image": "Students/FE028.jpg",
+                    "roll": "FB028"
+                }
+                ,
+                {
+                    "id": 4,
+                    "name": "Irfan Shaikh",
+                    "image": "Students/FE051.jpg",
+                    "roll": "FB051"
+                }
+                ,
+                {
+                    "id": 5,
+                    "name": "Niranjan Karche",
+                    "image": "Students/FB027.jpeg",
+                    "roll": "FB027"
+                }
+                ,
+                {
+                    "id": 6,
+                    "name": "Bhavin Ghangale",
+                    "image": "Students/FB018.jpg",
+                    "roll": "FB018"
+                }
+                ,
+                {
+                    "id": 7,
+                    "name": "Sarthak Athare",
+                    "image": "Students/FB003.jpg",
+                    "roll": "FB003"
+                }
+                ,
+                {
+                    "id": 8,
+                    "name": "Deepak Singh",
+                    "image": "Students/FB010.jpg",
+                    "roll": "FB010"
+                }
+                ,
+                {
+                    "id": 9,
+                    "name": "Aishwarya Edke",
+                    "image": "Students/FB012.jpg",
+                    "roll": "FB012"
+                }
+                ,
+                {
+                    "id": 10,
+                    "name": "Riddhi Asawa",
+                    "image": "Students/FB002.jpeg",
+                    "roll": "FB002"
+                }
+                ,
+                {
+                    "id": 11,
+                    "name": "Avinash Gogawale",
+                    "image": "Students/FE061.jpg",
+                    "roll": "FB061"
+                }
+                ,
+                {
+                    "id": 12,
+                    "name": "Ankita Khade",
+                    "image": "Students/FB029.jpeg",
+                    "roll": "FB029"
+                }
+                ,
+                {
+                    "id": 13,
+                    "name": "Siddhant Tupe",
+                    "image": "Students/FB053.jpeg",
+                    "roll": "FEB053"
+                }
+                ,
+                {
+                    "id": 14,
+                    "name": "Snehal Raut",
+                    "image": "Students/FB050.jpeg",
+                    "roll": "FB050"
+                }
+                ,
+                {
+                    "id": 15,
+                    "name": "Keshav Joshi",
+                    "image": "Students/FB062.jpeg",
+                    "roll": "FB062"
+                }
+                ,
+                {
+                    "id": 16,
+                    "name": "Satyam Gavhane",
+                    "image": "Students/FB016.jpg",
+                    "roll": "FB016"
+                }
+                ,
+                {
+                    "id": 17,
+                    "name": "Dharshan Sapkal",
+                    "image": "Students/FB068.jpeg",
+                    "roll": "FB068"
+                }
+                ,
+                {
+                    "id": 18,
+                    "name": "Revannath Khodade",
+                    "image": "Students/FB034.jpeg",
+                    "roll": "FB034"
+                }
+                ,
+                {
+                    "id": 19,
+                    "name": "Onkar Kokane",
+                    "image": "Students/FB036.jpeg",
+                    "roll": "FB036"
+                }
+                ,
+                {
+                    "id": 20,
+                    "name": "Pratik",
+                    "image": "Students/FB025.jpg",
+                    "roll": "FB025"
+                }
+                ,
+                {
+                    "id": 21,
+                    "name": "Maheshwari Badgri",
+                    "image": "Students/FB004.jpg",
+                    "roll": "FB004"
+                }
+                ,
+                {
+                    "id": 22,
+                    "name": "Arhann Khan",
+                    "image": "Students/FB064.jpg",
+                    "roll": "FB064"
+                }
+                ,
+                {
+                    "id": 59,
+                    "name": "Aniket Gite",
+                    "image": "Students/FE059.jpg",
+                    "roll": "FB059"
+                }
+                ,
+                {
+                    "id": 15,
+                    "name": "Keshav Joshi",
+                    "image": "Students/FB062.jpg",
+                    "roll": "FB062"
+                }
+                
+
+            ]
+        builtCard(students)
+        function builtCard(data) {
+            var cards = document.getElementById("cards")
+            for (var i = 0; i < data.length; i++) {
+                var card = `
+   <div class="card sha ">
+                            <div class="post">
+                                <div class="postName">
+                                    ${data[i].roll}
+                                </div>
+                            </div>
+                            <div class="image">
+                                <img src="${data[i].image}" alt="">
+                            </div>
+                            <div class="head_name">
+                                <h2>${data[i].name}</h2>
+                            </div>
+                        </div>
+            `
+                cards.innerHTML += card
+            }
+        }
+    </script>
+</body>
+
+</html>
+</body>
+
+</html>
